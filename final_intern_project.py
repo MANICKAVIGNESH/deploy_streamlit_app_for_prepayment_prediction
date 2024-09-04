@@ -10,14 +10,10 @@ class CustomPipeline:
     pass
 
 # Load the pipeline
-file_path = 'combined_pipeline(New).pkl'
-
-# Load the pipeline
 try:
-    elf = load(file_path)
+    elf = load('C:/Users/manic/Downloads/combined_pipeline(New).pkl')  # Update with the correct path
 except Exception as e:
     st.error(f"An error occurred: {e}")
-
 
 # Streamlit user inputs 
 st.title("Mortgage Prediction App") 
