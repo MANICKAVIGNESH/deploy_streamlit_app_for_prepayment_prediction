@@ -1,4 +1,5 @@
-'''import streamlit as st
+
+import streamlit as st
 import numpy as np
 from joblib import load
 import gdown
@@ -101,3 +102,4 @@ if st.button("Predict"):
             st.write("Regression Prediction (No Prepayment Scenario):", regression_prediction_alt)
     except Exception as e:
         st.error(f"Prediction failed: {e}")
+'''
