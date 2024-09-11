@@ -1,105 +1,66 @@
-
 import streamlit as st
 import numpy as np
 from joblib import load
-import gdown
 
 # Define or import CustomPipeline before loading the pickle file
 class CustomPipeline:
     # your class implementation here
     pass
-    
-# Google Drive download URL
-download_url = 'https://drive.google.com/uc?id=1zCTevk022HBD9lLUns4fxR7u0M1Ii9HM'
 
-# Destination path for the downloaded file
-output = 'combined_pipeline.pkl'
-
-# Download the file from Google Drive
-gdown.download(download_url, output, quiet=False)
-
-# Load the pipeline
-try:
-    elf = load(output)
-except Exception as e:
-    st.error(f"An error occurred: {e}")
-
-# Streamlit user inputs 
-st.title("Mortgage Prediction App") 
-
-# Input fields for the user
-monthly_income = st.number_input("Monthly Income", min_value=0)
-loan_term = st.number_input("Loan Term (in months)", min_value=1)
-loan_amount = st.number_input("Loan Amount", min_value=0)
-
-input_data = np.array([[monthly_income, loan_term, loan_amount]])
-
-if st.button("Predict"):
-    # Predict with the classification model
-    try:
-        classification_prediction = elf.clf.predict(input_data)
-        st.write("Classification Prediction(Note - '0' mean NO-prepayment and '1' mean Prepayment):", classification_prediction)
-
-        if classification_prediction[0] == 1:
-            # Follow the original code for classification result 1
-            regression_prediction = elf.reg.predict(input_data)
-            st.write("Regression Prediction:", regression_prediction)
-        elif classification_prediction[0] == 0:
-            # Follow the alternate code for classification result 0
-            regression_prediction_alt = elf.reg.predict(input_data)
-            st.write("Regression Prediction (Alt):", regression_prediction_alt)
-    except Exception as e:
-        st.error(f"Prediction failed: {e}")
-'''
-import streamlit as st
-import numpy as np
-from joblib import load
 import gdown
 
-# CustomPipeline class (ensure it's compatible with your model)
-class CustomPipeline:
-    def __init__(self, clf, reg):
-        self.clf = clf
-        self.reg = reg
-
-# Google Drive download URL for the model
-download_url = 'https://drive.google.com/uc?id=1zCTevk022HBD9lLUns4fxR7u0M1Ii9HM'
-output = 'combined_pipeline.pkl'
-
-# Download the model from Google Drive
-gdown.download(download_url, output, quiet=False)
-
-# Load the pipeline
 try:
-    elf = load(output)
+    # Download Combine_pipe_line.pkl
+    gdown.download('https://drive.google.com/uc?id=your_file_id1', 'Combine_pipe_line.pkl', quiet=False)
+    
+    # Download Prepayment_risk_pipeline.pkl
+    gdown.download('https://drive.google.com/uc?id=your_file_id2', 'Prepayment_risk_pipeline.pkl', quiet=False)
+    
+    # Load the pickle files
+    elf = load('Combine_pipe_line.pkl')
+    elf2 = load('Prepayment_risk_pipeline.pkl')
+
 except Exception as e:
-    st.error(f"An error occurred while loading the model: {e}")
+    print(f"An error occurred: {e}")
 
-# Streamlit UI elements
-st.title("Mortgage Prediction App")
+# Streamlit user inputs 
+st.title("Mortgage Pre-payment and Pre-payment risk Prediction app") 
 
-# User inputs
-monthly_income = st.number_input("Monthly Income", min_value=0, step=1000)
-loan_term = st.number_input("Loan Term (in months)", min_value=1, step=1)
-loan_amount = st.number_input("Loan Amount", min_value=0, step=1000)
+# Get all inputs from user at the beginning with unique keys
+monthly_income = st.number_input("Enter the monthly income:", min_value=0, key='monthly_income')
+OrigLoanTerm = st.number_input("Enter the loan term in months:", min_value=0, key='OrigLoanTerm')
+OrigUPB = st.number_input("Enter the loan amount:", min_value=0, key='OrigUPB')
+MonthsInRepayment = st.number_input("Enter the MonthsInRepayment value between 0 - 250:", min_value=0, max_value=250, key='MonthsInRepayment')
+EMI = st.number_input("Enter the EMI value between 0 - 2500 dollars:", min_value=0, max_value=2500, key='EMI')
+interest_amount = st.number_input("Enter the interest amount value between 50000 - 300000:", min_value=50000, max_value=300000, key='interest_amount')
 
-# Prepare the input data for prediction
-input_data = np.array([[monthly_income, loan_term, loan_amount]])
+if st.button("Predict"):  # Trigger prediction when the button is clicked
+    # Prepare input data for classification model
+    input_data = np.array([[monthly_income, OrigLoanTerm, OrigUPB]])
 
-# Prediction button logic
-if st.button("Predict"):
+    st.write("Note: Convert 'Yes- delinquent' = 1 and 'No- delinquent' = 0")
+
+    # Predict using the classification model
     try:
-        # Classification prediction
         classification_prediction = elf.clf.predict(input_data)
-        st.write("Classification Prediction (0 = NO-prepayment, 1 = Prepayment):", classification_prediction)
+        st.write("Classification Prediction:", classification_prediction)
 
-        # If prepayment is predicted, follow up with regression
-        if classification_prediction[0] == 1:
+        # Predict with the regression model if classification result is 1 or 0
+        if classification_prediction[0] in [0, 1]:
             regression_prediction = elf.reg.predict(input_data)
-            st.write("Regression Prediction (Prepayment Amount):", regression_prediction)
         else:
-            regression_prediction_alt = elf.reg.predict(input_data)
-            st.write("Regression Prediction (No Prepayment Scenario):", regression_prediction_alt)
+            regression_prediction = "It's delinquent"
+        
+        st.write("Regression Prediction:", regression_prediction)
+
+        # Prepare second input data for the second classification model (pre-payment risk)
+        input_data2 = np.array([[MonthsInRepayment, EMI, interest_amount]])
+
+        # Predict with the second classification model
+        classification_prediction2 = elf2.clf.predict(input_data2)
+
+        st.write("Note: 1 = 'High' and 0 = 'Low'")
+        st.write("Pre-Payment Risk:", classification_prediction2)
+
     except Exception as e:
-        st.error(f"Prediction failed: {e}")
-'''
+        st.error(f"An error occurred during prediction: {e}")
