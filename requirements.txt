@@ -1,5 +1,7 @@
-streamlit
-numpy
-joblib
+Python 3.x
+Streamlit
 gdown
 scikit-learn
+joblib
+numpy
+pandas
