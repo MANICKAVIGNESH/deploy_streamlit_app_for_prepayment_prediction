@@ -35,16 +35,12 @@ Implement a custom pipeline combining classification and regression models to st
 Key Code Components
 
 ## EMI Calculation:
-python
-Copy code
 r = df['OrigInterestRate'] / (12 * 100)
 n = df['OrigLoanTerm']
 P = df['OrigUPB']
 df['EMI'] = P * r * (1 + r) ** n / ((1 + r) ** n - 1)
 
 ## Pre-payment Calculation:
-python
-Copy code
 def prepay(DTI, monthly_income):
     if DTI < 50:
         p = monthly_income / 2
@@ -53,21 +49,19 @@ def prepay(DTI, monthly_income):
     return p
 df['pre_payment'] = np.vectorize(prepay)(df['DTI'], df['monthly_income'] * 24) - (df['EMI'] * 24)
 
-Classification Model:
+## Classification Model:
 from sklearn.linear_model import LogisticRegression
 clf = LogisticRegression(random_state=42)
 clf.fit(X_train, y_class_train)
 
 
-Regression Model:
+## Regression Model:
 from sklearn.linear_model import LinearRegression
 reg = LinearRegression()
 reg.fit(X_train_reg, y_reg_train_filtered)
 
 Custom Pipeline:
 
-python
-Copy code
 class CustomPipeline(BaseEstimator, TransformerMixin):
     def __init__(self, clf, reg):
         self.clf = clf
@@ -85,6 +79,7 @@ class CustomPipeline(BaseEstimator, TransformerMixin):
         X_filtered = X[y_class_pred == 1]
         y_reg_pred = self.reg.predict(X_filtered)
         return y_class_pred, y_reg_pred
+        
 Evaluation Metrics
 Classification:
 
