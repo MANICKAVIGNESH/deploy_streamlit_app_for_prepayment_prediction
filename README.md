@@ -32,16 +32,19 @@ Train a Linear Regression model to predict the likelihood of pre-payment for bor
 ## Pipeline:
 
 Implement a custom pipeline combining classification and regression models to streamline the prediction process. The pipeline first classifies borrowers into delinquent or non-delinquent, then applies the regression model to predict pre-payment risk for delinquent borrowers.
-## Key Code Components
-'''
-# EMI Calculation:
+Key Code Components
+
+## EMI Calculation:
+python
+Copy code
 r = df['OrigInterestRate'] / (12 * 100)
 n = df['OrigLoanTerm']
 P = df['OrigUPB']
 df['EMI'] = P * r * (1 + r) ** n / ((1 + r) ** n - 1)
-'''
-'''
-# Pre-payment Calculation:
+
+## Pre-payment Calculation:
+python
+Copy code
 def prepay(DTI, monthly_income):
     if DTI < 50:
         p = monthly_income / 2
@@ -49,18 +52,18 @@ def prepay(DTI, monthly_income):
         p = monthly_income * 3 / 4
     return p
 df['pre_payment'] = np.vectorize(prepay)(df['DTI'], df['monthly_income'] * 24) - (df['EMI'] * 24)
-'''
+
 Classification Model:
 from sklearn.linear_model import LogisticRegression
 clf = LogisticRegression(random_state=42)
 clf.fit(X_train, y_class_train)
-'''
-'''
+
+
 Regression Model:
 from sklearn.linear_model import LinearRegression
 reg = LinearRegression()
 reg.fit(X_train_reg, y_reg_train_filtered)
-'''
+
 Custom Pipeline:
 
 python
