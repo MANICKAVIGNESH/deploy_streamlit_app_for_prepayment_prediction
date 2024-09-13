@@ -36,10 +36,10 @@ Key Code Components
 
 ## EMI Calculation:
 '''js
-r = df['OrigInterestRate'] / (12 * 100)
-n = df['OrigLoanTerm']
-P = df['OrigUPB']
-df['EMI'] = P * r * (1 + r) ** n / ((1 + r) ** n - 1)
+    r = df['OrigInterestRate'] / (12 * 100)
+    n = df['OrigLoanTerm']
+    P = df['OrigUPB']
+    df['EMI'] = P * r * (1 + r) ** n / ((1 + r) ** n - 1)
 '''
 
 ## Pre-payment Calculation:
