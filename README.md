@@ -35,7 +35,7 @@ Implement a custom pipeline combining classification and regression models to st
 Key Code Components
 
 ## EMI Calculation:
-'''py
+'''python
 r = df['OrigInterestRate'] / (12 * 100)
 n = df['OrigLoanTerm']
 P = df['OrigUPB']
